@@ -12,11 +12,10 @@ namespace Kino_Pruefungsvorbereitung
     public class Program
     {
 
-        private static Program instance;
+        
         public static string csvUhrzeit;
         public static int csvSaal;
         public static string csvPlatz;
-        public Program program;
 
 
 
@@ -143,8 +142,33 @@ namespace Kino_Pruefungsvorbereitung
                         
                     break;
                 case 'S':
-                    
-                        Console.WriteLine("S");
+                    /*string[] lines = File.ReadAllLines(@"E:\\test1.txt");
+
+                    string uhrzeitString = null;
+                    string saal = null;
+
+                    int line = 1;
+                    foreach (string s in lines)
+                    {
+
+                        if(line == 1 && !s.Equals("Reservierung!")){
+                            MessageBox.Show("Es wurde keine Reservierung gefunden!");
+                            return;
+                        }
+                        else if(line == 2)
+                        {
+                            uhrzeitString = s.Split(new string[] {": "}, StringSplitOptions.None)[1];                      
+                        }else if(line == 3)
+                        {
+                            saal = ""
+                        }
+                        line++;
+                        }*/
+                    StreamReader sr = new StreamReader(@"E:\test1.txt");
+                    string fileOutput = sr.ReadToEnd();
+                    Console.WriteLine(fileOutput);
+
+            
                     break;
 
             }

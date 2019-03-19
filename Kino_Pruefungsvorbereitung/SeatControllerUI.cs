@@ -9,20 +9,21 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO; 
+
 namespace Kino_Pruefungsvorbereitung
 {
     public partial class SeatControllerUI : Form
     {
-        private static Program instance;
-        private int[] angaben;
-        private String uhrzeit;
+        private int[] angaben;              // Private bedeutet das man von dieser Klasse auf die Variable zugreifen kann, würde man jetzt noch einen "getter" dafür schreiben (public int[] getAngaben(){ return [this.]angaben }) könnte man diese auch in anderen klassen benutzten solange man die instance dieser klasse hat. Man könnte das ganze auch einfach ohne "private" machen, wir wollen aber hier doch die richtigen conventions verwenden.
+        private String uhrzeit;             // ^
         
 
 
         private int price = 0;
 
 
-        private IList<Sitzplatz> sitzplaetze;//Sitzplätze in "Liste" statt Array weil Liste besser ~Maribot G.
+        private IList<Sitzplatz> sitzplaetze;//Sitzplätze in "Liste" statt Array weil Liste besser.
+  
 
         public SeatControllerUI(int[] angaben, String uhrzeit)
         {
@@ -50,9 +51,9 @@ namespace Kino_Pruefungsvorbereitung
                 {
                     premium = true;
                 }
-                Sitzplatz seat = new Sitzplatz(premium, currentRow);    
+                Sitzplatz seat = new Sitzplatz(premium, currentRow,i);             
                 sitzplaetze.Add(seat);
-                Console.WriteLine("New Seat created! Premium: " + premium + ", Row: " + seat.getReihe() + ", Number: " + i);
+                //Console.WriteLine("New Seat created! Premium: " + premium + ", Row: " + seat.getReihe() + ", Number: " + i);      //Nachricht, welche ausgibt, das ein Sitz erstellt wurde.
                 currentSeatsInRow++;
             }
 
@@ -92,14 +93,72 @@ namespace Kino_Pruefungsvorbereitung
 
         protected void printButtonClickEvent(object sender, EventArgs e)
         {
-            StreamWriter sw = new StreamWriter(@"D:\test1.txt");
+            StreamWriter sw = new StreamWriter(@"E:\test1.txt");
+
+
+            
+
+            // Man könnte den folgenden Part auch ohne Arrays machen, wird aber aus Lernzwecken mit Arrays gemacht.
+
+            int b = 0;
+            for(int i = 0; i < sitzplaetze.Count(); i++) {
+
+                Sitzplatz sitzplatz = sitzplaetze.ElementAt(i);
+
+                if (!sitzplatz.istVerfuegbar())
+                    b++;       
+            }
+
+            if(b == 0)
+            {
+                MessageBox.Show("Du hast keine Plätze ausgewählt!"); // "Errormessage" wenn keine Sitzplätze ausgewählt wurden
+                return;
+            }
+
+            Sitzplatz[] sitzplatzArray = new Sitzplatz[b];
+
+            b = 0;
+            for(int i = 0; i< sitzplaetze.Count(); i++)
+            {
+                Sitzplatz sitzplatz = sitzplaetze.ElementAt(i);
+                if (!sitzplatz.istVerfuegbar())
+                {
+
+                    sitzplatzArray[b] = sitzplatz;
+                    b++;
+                }
+            }
+
+
+            // Hier wird ein StringBuilder benutzt um die Plätze in einem String aufzulisten.
+
+            StringBuilder stringBuilder = new StringBuilder();
+
+
+            bool c = false;
+
+            foreach(Sitzplatz sitzplatz in sitzplatzArray)
+            {
+                if(c == false) {
+                stringBuilder.Append(sitzplatz.getNumber());
+                c = true;
+                }
+                else
+                {
+                    stringBuilder.Append(",").Append(" " + sitzplatz.getNumber());
+                }
+            }
+
+            Program.csvPlatz = stringBuilder.ToString();
 
             string output=("Uhrzeit: "+ Program.csvUhrzeit);
             string output1 = ("Saal: " + Program.csvSaal);
             string output2 = ("Plätze: " + Program.csvPlatz);
+            string output3 = ("Kosten: " + price + " Euro.");
             sw.WriteLine("Reservierung!");
             sw.WriteLine(output);
-            sw.Write("{0}.         {1}.",output1,output2);
+            sw.WriteLine("{0}.         {1}.",output1,output2);
+            sw.WriteLine(output3);
             sw.Close();
 
 
@@ -195,28 +254,25 @@ namespace Kino_Pruefungsvorbereitung
             Console.WriteLine("Button clicked -> " + button.Text);
 
             Sitzplatz seat = sitzplaetze.ElementAt((int.Parse(button.Text) - 1));
-            /*for (int j=0;j<sitzNummer.Length;j++)
-            {
-                sitzNummer[j] = (int.Parse(button.Text) - 1);
-                
-            }*/
+           
+       
             
                 
             
            
             seat.setVerfuegbar(!seat.istVerfuegbar());
-            button.BackColor = seat.istVerfuegbar() ? (seat.istPremium() ? Color.DarkGreen : Color.Green) : Color.DimGray;
+            button.BackColor = seat.istVerfuegbar() ? (seat.istPremium() ? Color.DarkGreen : Color.Green) : Color.DimGray; // IF else in einer Zeile. man könnte auch if(abfrage){ dann }else{sonst} benutzten
 
 
-            if (!seat.istVerfuegbar())
+            if (!seat.istVerfuegbar()) // Ausrufezeichen ist if(boolean == false) ohne Ausrufenzeichen wäre es if(boolean == true)
             { 
 
-                price += seat.istPremium() ? Sitzplatz.premiumPrice : Sitzplatz.normalPrice;
+                price += seat.istPremium() ? Sitzplatz.premiumPrice : Sitzplatz.normalPrice; // IF else in einer Zeile. man könnte auch if(abfrage){ dann }else{sonst} benutzten - Wenn der Sitz kein "Premiumsitzt" ist wird der normale Preis gezahlt, wenn doch wird der Premium Preis bezahlt
 
             }
             else
             {
-                price -= seat.istPremium() ? Sitzplatz.premiumPrice : Sitzplatz.normalPrice;
+                price -= seat.istPremium() ? Sitzplatz.premiumPrice : Sitzplatz.normalPrice; // IF else in einer Zeile. man könnte auch if(abfrage){ dann }else{sonst} benutzten
             }
 
             if(price < 0)
