@@ -8,14 +8,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+using System.IO; 
 namespace Kino_Pruefungsvorbereitung
 {
     public partial class SeatControllerUI : Form
     {
-
+        private static Program instance;
         private int[] angaben;
         private String uhrzeit;
+        
 
 
         private int price = 0;
@@ -86,11 +87,21 @@ namespace Kino_Pruefungsvorbereitung
             printButton.Location = new Point(x, y);
 
             printButton.Click += new EventHandler(printButtonClickEvent);
-        
+            
         }
 
         protected void printButtonClickEvent(object sender, EventArgs e)
         {
+            StreamWriter sw = new StreamWriter(@"D:\test1.txt");
+
+            string output=("Uhrzeit: "+ Program.csvUhrzeit);
+            string output1 = ("Saal: " + Program.csvSaal);
+            string output2 = ("Plätze: " + Program.csvPlatz);
+            sw.WriteLine("Reservierung!");
+            sw.WriteLine(output);
+            sw.Write("{0}.         {1}.",output1,output2);
+            sw.Close();
+
 
         }
 
@@ -137,7 +148,7 @@ namespace Kino_Pruefungsvorbereitung
             {
                 Sitzplatz sitzplatz = sitzplaetze.ElementAt(i);
 
-                
+
                 int number = i + 1;
 
 
@@ -149,7 +160,7 @@ namespace Kino_Pruefungsvorbereitung
                 button.Location = new Point(x, y); // Button auf die richtige Position in der Form setzten.
 
                 button.Click += new EventHandler(seatButtonClickEvent); // Event hinzufügen das beim Klicken auf dem Button ausgeführt wird.
-                button.BackColor = sitzplatz.istVerfuegbar() ? (sitzplatz.istPremium() ? Color.Purple : Color.Green) : Color.Red; // Button farbe
+                button.BackColor = sitzplatz.istVerfuegbar() ? (sitzplatz.istPremium() ? Color.DarkGreen : Color.Green) : Color.Red; // Button farbe
                 button.Show(); // anzeigen des buttons
 
                 buttonsInRow++; 
@@ -176,14 +187,25 @@ namespace Kino_Pruefungsvorbereitung
 
         protected void seatButtonClickEvent(object sender, EventArgs e)
         {
-            Button button = sender as Button;
+            //Instanzbildung
+            int[] sitzNummer = new int[sitzplaetze.Count];
 
+            Button button = sender as Button;
+            
             Console.WriteLine("Button clicked -> " + button.Text);
 
             Sitzplatz seat = sitzplaetze.ElementAt((int.Parse(button.Text) - 1));
-
+            /*for (int j=0;j<sitzNummer.Length;j++)
+            {
+                sitzNummer[j] = (int.Parse(button.Text) - 1);
+                
+            }*/
+            
+                
+            
+           
             seat.setVerfuegbar(!seat.istVerfuegbar());
-            button.BackColor = seat.istVerfuegbar() ? (seat.istPremium() ? Color.Purple : Color.Green) : Color.DimGray;
+            button.BackColor = seat.istVerfuegbar() ? (seat.istPremium() ? Color.DarkGreen : Color.Green) : Color.DimGray;
 
 
             if (!seat.istVerfuegbar())
