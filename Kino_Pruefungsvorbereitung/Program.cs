@@ -22,6 +22,7 @@ namespace Kino_Pruefungsvorbereitung
             string vorstellung1 = "17:00";
             string vorstellung2 = "20:00";
             char switchcase;
+            // test
             string eingabeUhrzeit = null;
 
 
