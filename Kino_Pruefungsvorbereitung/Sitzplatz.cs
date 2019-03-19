@@ -27,7 +27,7 @@ namespace CinemaSeatController
         // Hier bekommen wir den reihe wert, da dieser private ist
         public int getReihe()
         {
-            return reihe;
+            return reihe; 
         }
 
         // Hier bekommen wir den premium wert, da dieser private ist
